@@ -61,6 +61,13 @@ cp .streamlit/secrets.toml.example .streamlit/secrets.toml
 streamlit run app.py
 ```
 
+`.streamlit/config.toml` sets the app's color theme — it's already
+committed and safe (no secrets in it), so it applies automatically.
+
+**Optional — movie posters:** add a free `TMDB_API_KEY` to your secrets
+(sign up at https://www.themoviedb.org/settings/api). Without it, the
+dashboard works exactly the same, just without poster thumbnails.
+
 **Hosted (so it's just a URL, no laptop required)** — deploy for free on
 [Streamlit Community Cloud](https://streamlit.io/cloud):
 - Connect your GitHub repo, pick `app.py` as the entry point.
