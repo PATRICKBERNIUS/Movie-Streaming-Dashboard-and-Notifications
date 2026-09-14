@@ -1,59 +1,88 @@
-# Weekly Streaming Alert
+# Reel Ledger + Weekly Streaming Alert
 
-Checks your watchlist against your streaming subscriptions every Friday and
-sends you a phone notification for anything currently available.
+Two pieces that share the same GitHub repo as their source of truth:
 
-## One-time setup (about 10 minutes)
+- **`app.py`** — a Streamlit dashboard where you keep your movie watchlist
+  and streaming subscriptions, and check what's available right now.
+- **`check_availability.py`** — runs automatically every Friday via GitHub
+  Actions and sends a phone notification for anything on your list that's
+  currently streaming on your services.
 
-1. **Create a GitHub repo** (private is fine) and upload these files,
-   keeping the folder structure (the `.github/workflows/` folder matters).
+Both read and write the same two files in this repo (`movies.json` and
+`streaming_services.json`), so there's one list, not two.
 
-2. **Get a free ntfy topic for your phone**
-   - Install the "ntfy" app (iOS or Android — free, no account needed).
-   - In the app, tap "+" and subscribe to a topic name you make up —
-     make it long and unguessable since anyone who knows it can send you
-     notifications, e.g. `alex-movie-alerts-9f3k2`.
-   - That's your `NTFY_TOPIC`.
+## One-time setup
 
-3. **Get a free Watchmode API key**
-   - Register at https://api.watchmode.com/ and copy your API key from
-     the dashboard.
+### 1. Create the repo
 
-4. **Add secrets to your GitHub repo**
-   - Repo → Settings → Secrets and variables → Actions → New repository secret.
-   - Add two secrets (these are real credentials, so they stay as secrets):
-     - `WATCHMODE_API_KEY` — your Watchmode key
-     - `NTFY_TOPIC` — the topic name from step 2
-   - Your subscribed services are *not* a secret — you'll set those from
-     the dashboard in the next step, and they're stored in a plain file
-     (`streaming_services.json`) in the repo.
+Create a GitHub repo (private is fine) and upload everything in this
+folder, keeping the structure — `.github/workflows/` and `.streamlit/`
+both matter as exact paths.
 
-5. **Connect the dashboard to this repo.** Open the Reel Ledger dashboard,
-   expand Settings → "GitHub sync", and fill in:
-   - Your GitHub username
-   - This repo's name (e.g. `streaming-alert`)
-   - File path: `movies.json`
-   - A **fine-grained personal access token**, scoped to just this repo,
-     with "Contents: Read and write" permission — [create one here](https://github.com/settings/tokens?type=beta).
+### 2. Get a free ntfy topic for your phone
 
-   Once connected, `movies.json` and `streaming_services.json` in this
-   repo become the same list and service selection you see in the
-   dashboard — adding/removing a movie or ticking a service there
-   commits straight to these files. Check the services you subscribe to
-   under Settings → "Your streaming subscriptions" — that's what writes
-   to `streaming_services.json`.
+- Install the "ntfy" app (iOS or Android — free, no account needed).
+- In the app, subscribe to a topic name you make up — make it long and
+  unguessable, since anyone who knows it can send you notifications,
+  e.g. `alex-movie-alerts-9f3k2`.
 
-6. **Test it manually** before waiting for Friday:
-   - Repo → Actions tab → "Weekly streaming availability check" → "Run workflow".
-   - Check the run logs, and check your phone for the ntfy notification.
+### 3. Get a free Watchmode API key
 
-## Keeping your list in sync
+Register at https://api.watchmode.com/ and copy your key from the
+dashboard.
 
-Once GitHub sync is connected in the dashboard, there's no manual copying:
-the dashboard writes directly to `movies.json` in this repo, and the
-Friday script reads that same file. If you ever edit `movies.json` by
-hand in GitHub instead, the dashboard will pick up those changes the next
-time you open it.
+### 4. Create a GitHub personal access token
+
+This lets both the dashboard and (optionally) your own scripts read and
+write `movies.json` / `streaming_services.json` in this one repo.
+
+- Go to https://github.com/settings/tokens?type=beta → "Generate new token"
+- Scope it to **only this repository**
+- Permissions → Repository permissions → **Contents: Read and write**
+- Copy the token — GitHub only shows it once.
+
+### 5. Add secrets for the weekly Actions script
+
+Repo → Settings → Secrets and variables → Actions → New repository secret:
+
+- `WATCHMODE_API_KEY` — your Watchmode key
+- `NTFY_TOPIC` — your ntfy topic name
+
+(Your subscribed services are *not* a secret — they live in
+`streaming_services.json`, edited from the dashboard.)
+
+### 6. Run the dashboard
+
+**Locally:**
+```
+pip install -r requirements.txt
+cp .streamlit/secrets.toml.example .streamlit/secrets.toml
+# edit .streamlit/secrets.toml with your real values
+streamlit run app.py
+```
+
+**Hosted (so it's just a URL, no laptop required)** — deploy for free on
+[Streamlit Community Cloud](https://streamlit.io/cloud):
+- Connect your GitHub repo, pick `app.py` as the entry point.
+- In the app's Settings → Secrets, paste the same key/value pairs from
+  `secrets.toml.example` (real values, not the placeholders).
+- Your dashboard gets a public-ish URL (unlisted, not indexed) you can
+  open from your phone anytime — no browser storage involved, since the
+  token and API key live in Streamlit's server-side secrets instead.
+
+### 7. Test the weekly script manually
+
+Repo → Actions tab → "Weekly streaming availability check" → "Run workflow."
+Check the run logs, and check your phone for the ntfy notification.
+
+## Why two separate credentials stores?
+
+`WATCHMODE_API_KEY` and `GITHUB_TOKEN` are real credentials, so they live
+in secrets in *two* places that never talk to each other automatically:
+GitHub Actions secrets (for the Friday script) and Streamlit secrets (for
+the dashboard). Your movie list and services aren't sensitive, so they
+live as plain files in the repo instead, kept in sync by both programs
+reading/writing the same files.
 
 ## Notification behavior
 
