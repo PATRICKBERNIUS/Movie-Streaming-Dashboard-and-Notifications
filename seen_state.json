@@ -61,7 +61,6 @@
   ],
   "Platoon|None": [],
   "The covenant|None": [
-    "Disney+",
     "Hulu"
   ],
   "The Natural|None": [],
@@ -103,5 +102,12 @@
   ],
   "The Gift|None": [
     "Amazon Prime Video"
-  ]
+  ],
+  "Before the Devil Knows You\u2019re Dead|None": [
+    "Amazon Prime Video",
+    "Disney+",
+    "Hulu"
+  ],
+  "Primal Fear|None": [],
+  "Winter\u2019s Bone|None": []
 }
