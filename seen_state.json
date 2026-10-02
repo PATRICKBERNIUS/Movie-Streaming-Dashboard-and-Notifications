@@ -32,8 +32,8 @@
     "Max"
   ],
   "The Firm|None": [
-    "Hulu",
-    "Max"
+    "Max",
+    "Peacock"
   ],
   "The Hustler|None": [],
   "Incendies|None": [],
@@ -61,6 +61,7 @@
   ],
   "Platoon|None": [],
   "The covenant|None": [
+    "Amazon Prime Video",
     "Hulu"
   ],
   "The Natural|None": [],
@@ -68,7 +69,9 @@
   "The Piano|None": [],
   "Killers of the Flower Moon|None": [],
   "28 Days Later|None": [],
-  "Mr. Mom|None": [],
+  "Mr. Mom|None": [
+    "Amazon Prime Video"
+  ],
   "The Jackal|None": [],
   "Kiss Kiss Bang Bang|None": [],
   "Adaptation|None": [],
